@@ -152,6 +152,7 @@ class RackCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['progetto'] = self.progetto
+        context['progetto_id'] = self.progetto.pk
         return context
 
     def form_valid(self, form):
@@ -166,6 +167,11 @@ class RackUpdateView(LoginRequiredMixin, UpdateView):
     model = Rack
     form_class = RackForm
     template_name = 'cablaggio/rack_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['progetto_id'] = self.object.progetto_id
+        return context
 
     def get_success_url(self):
         return reverse('progetto-detail', args=[self.object.progetto_id])
@@ -193,6 +199,7 @@ class ElementoRackCreateView(LoginRequiredMixin, CreateView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context['rack'] = self.rack
+        context['progetto_id'] = self.rack.progetto_id
         return context
 
     def form_valid(self, form):
@@ -209,6 +216,11 @@ class ElementoRackUpdateView(LoginRequiredMixin, UpdateView):
     model = ElementoRack
     form_class = ElementoRackForm
     template_name = 'cablaggio/elemento_form.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['progetto_id'] = self.object.rack.progetto_id
+        return context
 
     def post(self, request, *args, **kwargs):
         # self.object viene mutato dal binding del ModelForm (form.instance è

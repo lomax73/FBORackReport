@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% block title %}Rack — Portale FBO{% endblock %}
+{% block title %}Rack — Report Rack{% endblock %}
 
 {% block content %}
 <h1>{% if object %}Modifica rack{% else %}Nuovo rack{% endif %}</h1>
@@ -9,7 +9,7 @@
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn" type="submit">Salva</button>
-        <a class="btn btn-secondary" href="{% url 'progetto-detail' progetto.pk|default:object.progetto_id %}">Annulla</a>
+        <a class="btn btn-secondary" href="{% url 'progetto-detail' progetto_id %}">Annulla</a>
     </form>
 </div>
 {% endblock %}
