@@ -67,9 +67,12 @@
         padding: 2pt 1pt; text-align: center; font-size: 7pt; overflow: hidden;
     }
     .cell:last-child { border-right: none; }
+    .cell-desc-row { height: 85pt; position: relative; }
     .cell-desc {
-        height: 60pt; white-space: normal; word-break: break-word;
-        font-size: 6.5pt; display: flex; align-items: center; justify-content: center;
+        position: absolute; top: 50%; left: 50%;
+        white-space: nowrap;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        font-size: 6.5pt;
     }
     .cell-vuota { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4pt, #e2e8f0 4pt, #e2e8f0 5pt); }
     .cell-zona { font-size: 6.5pt; font-weight: bold; background: #eaf6fc; }
@@ -100,7 +103,9 @@
 
 {% for entry in rack_list %}
 <div class="rack-block">
-    <div class="rack-title">{{ entry.rack.nome }}</div>
+    <div class="rack-title">
+        {{ entry.rack.nome }}{% if entry.rack.posizione %} — {{ entry.rack.posizione }}{% endif %}
+    </div>
 
     {% for e in entry.elementi %}
     <div class="panel">
@@ -119,9 +124,15 @@
                 {% endfor %}
             </div>
             <div class="panel-row">
+                <div class="cell" style="flex:0 0 70pt;">Tipo cavo</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">{{ p.tipo_cavo }}</div>
+                {% endfor %}
+            </div>
+            <div class="panel-row">
                 <div class="cell" style="flex:0 0 70pt;">Descrizione</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
+                <div class="cell cell-desc-row {% if p.non_cablata %}cell-vuota{% endif %}">
                     {% if not p.non_cablata %}<div class="cell-desc">{{ p.descrizione }}</div>{% endif %}
                 </div>
                 {% endfor %}

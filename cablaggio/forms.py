@@ -48,7 +48,7 @@ class ProgettoForm(forms.ModelForm):
 class RackForm(forms.ModelForm):
     class Meta:
         model = Rack
-        fields = ['nome', 'note', 'ordine']
+        fields = ['nome', 'posizione', 'note', 'ordine']
 
 
 class ElementoRackForm(forms.ModelForm):

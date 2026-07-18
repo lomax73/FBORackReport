@@ -38,6 +38,7 @@
             <a href="{% url 'rack-delete' entry.rack.pk %}">Elimina</a>
         </div>
     </div>
+    {% if entry.rack.posizione %}<p style="color:#64748b; margin:0.3rem 0 0;"><strong>Posizione:</strong> {{ entry.rack.posizione }}</p>{% endif %}
     {% if entry.rack.note %}<p style="color:#64748b; margin:0.3rem 0 0;">{{ entry.rack.note }}</p>{% endif %}
 
     {% if entry.elementi %}

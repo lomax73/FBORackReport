@@ -32,6 +32,10 @@ class Progetto(models.Model):
 class Rack(models.Model):
     progetto = models.ForeignKey(Progetto, on_delete=models.CASCADE, related_name='rack_set')
     nome = models.CharField(max_length=255)
+    posizione = models.CharField(
+        max_length=255, blank=True,
+        help_text='Dove si trova fisicamente il rack, es. "Sala CED, piano terra".',
+    )
     note = models.CharField(max_length=255, blank=True)
     ordine = models.PositiveIntegerField(default=0)
 

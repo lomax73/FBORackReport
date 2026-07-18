@@ -22,7 +22,7 @@ class ElementoRackInline(admin.TabularInline):
 
 @admin.register(Rack)
 class RackAdmin(admin.ModelAdmin):
-    list_display = ('nome', 'progetto', 'ordine')
+    list_display = ('nome', 'progetto', 'posizione', 'ordine')
     inlines = [ElementoRackInline]
 
 
