@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Elimina rack — Portale FBO{% endblock %}
+
+{% block content %}
+<h1>Elimina rack</h1>
+<div class="card">
+    <p>
+        Eliminare il rack <strong>{{ object.nome }}</strong>? Verranno eliminati anche i
+        pannelli, le posizioni e gli allegati collegati. L'operazione è definitiva.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn" style="background:#ef4444;" type="submit">Elimina</button>
+        <a class="btn btn-secondary" href="{% url 'progetto-detail' object.progetto_id %}">Annulla</a>
+    </form>
+</div>
+{% endblock %}

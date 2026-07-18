@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+
+{% block title %}{{ progetto.nome }} — Portale FBO{% endblock %}
+
+{% block content %}
+<div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
+    <h1>{{ progetto.nome }}</h1>
+    <div style="display:flex; gap:0.6rem;">
+        <a class="btn btn-secondary" href="{% url 'progetto-report-pdf' progetto.pk %}">Scarica report PDF</a>
+        <a class="btn btn-secondary" href="{% url 'progetto-update' progetto.pk %}">Modifica</a>
+        <a class="btn btn-secondary" href="{% url 'progetto-delete' progetto.pk %}">Elimina</a>
+    </div>
+</div>
+
+<div class="card">
+    <p><strong>Cliente:</strong> {{ progetto.cliente.ragione_sociale }}</p>
+    {% if progetto.sito %}<p><strong>Sito / cliente finale:</strong> {{ progetto.sito }}</p>{% endif %}
+    {% if progetto.data_intervento %}<p><strong>Data intervento:</strong> {{ progetto.data_intervento }}</p>{% endif %}
+    {% if progetto.note %}<p><strong>Note:</strong> {{ progetto.note }}</p>{% endif %}
+</div>
+
+<div style="display:flex; align-items:center; justify-content:space-between; margin-top:2rem; margin-bottom:0.5rem;">
+    <h2 style="margin:0;">Rack</h2>
+    <a class="btn" href="{% url 'rack-create' progetto.pk %}">+ Nuovo rack</a>
+</div>
+
+{% if not rack_list %}
+<p>Nessun rack ancora. <a href="{% url 'rack-create' progetto.pk %}">Aggiungine uno</a>.</p>
+{% endif %}
+
+{% for entry in rack_list %}
+<div class="card">
+    <div style="display:flex; align-items:center; justify-content:space-between;">
+        <h3 style="margin:0;">{{ entry.rack.nome }}</h3>
+        <div style="display:flex; gap:0.6rem;">
+            <a href="{% url 'elemento-create' entry.rack.pk %}">+ Pannello</a>
+            <a href="{% url 'rack-update' entry.rack.pk %}">Modifica</a>
+            <a href="{% url 'rack-delete' entry.rack.pk %}">Elimina</a>
+        </div>
+    </div>
+    {% if entry.rack.note %}<p style="color:#64748b; margin:0.3rem 0 0;">{{ entry.rack.note }}</p>{% endif %}
+
+    {% if entry.elementi %}
+    <table style="margin-top:1rem;">
+        <thead>
+            <tr><th>Pannello</th><th>Tipo</th><th>Porte</th><th>Esito</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for e in entry.elementi %}
+            <tr>
+                <td>{{ e.elemento.etichetta }}</td>
+                <td>{{ e.elemento.get_tipo_display }}</td>
+                <td>{{ e.offset|add:1 }}–{{ e.offset|add:e.elemento.n_posizioni }}</td>
+                <td>
+                    <span class="badge" style="background:#22c55e;">{{ e.riepilogo.ok }} OK</span>
+                    <span class="badge" style="background:#f59e0b;">{{ e.riepilogo.p2 }} P2</span>
+                    <span class="badge" style="background:#9ca3af;">{{ e.riepilogo.non_cablate }} non cablate</span>
+                </td>
+                <td style="white-space:nowrap;">
+                    <a href="{% url 'elemento-posizioni' e.elemento.pk %}">Compila posizioni</a> &middot;
+                    <a href="{% url 'elemento-update' e.elemento.pk %}">Modifica</a> &middot;
+                    <a href="{% url 'elemento-delete' e.elemento.pk %}">Elimina</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% else %}
+    <p style="margin-top:1rem;">Nessun pannello ancora. <a href="{% url 'elemento-create' entry.rack.pk %}">Aggiungine uno</a>.</p>
+    {% endif %}
+
+    <h4 style="margin-top:1.5rem;">Allegati</h4>
+    {% if entry.rack.allegati.all %}
+    <ul style="padding-left:1.2rem;">
+        {% for allegato in entry.rack.allegati.all %}
+        <li>
+            <a href="{{ allegato.file.url }}" target="_blank" rel="noopener">{{ allegato.nome_originale }}</a>
+            &middot; <a href="{% url 'rack-allegato-delete' allegato.pk %}">Elimina</a>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+    <p style="color:#64748b;">Nessun allegato caricato.</p>
+    {% endif %}
+    <form method="post" enctype="multipart/form-data" action="{% url 'rack-allegato-upload' entry.rack.pk %}" style="display:flex; gap:0.6rem; align-items:center;">
+        {% csrf_token %}
+        <input type="file" name="file" multiple style="width:auto; flex:1;">
+        <button class="btn btn-secondary" type="submit">Carica</button>
+    </form>
+</div>
+{% endfor %}
+{% endblock %}

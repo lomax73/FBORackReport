@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}Posizioni {{ elemento }} — Portale FBO{% endblock %}
+
+{% block content %}
+<h1>Posizioni — {{ elemento }}</h1>
+<p style="color:#64748b;">Rack: {{ elemento.rack.nome }}</p>
+
+<form method="post">
+    {% csrf_token %}
+    {{ formset.management_form }}
+    <table>
+        <thead>
+            <tr>
+                <th>Porta</th>
+                <th>N° cavo</th>
+                <th>Tipo cavo</th>
+                <th>Descrizione</th>
+                <th>Posizione in campo</th>
+                <th>Esito test</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for form in formset.forms %}
+            <tr>
+                <td>{{ offset|add:form.instance.numero }}</td>
+                <td>{{ form.cavo_n }}</td>
+                <td>{{ form.tipo_cavo }}</td>
+                <td>{{ form.descrizione }}</td>
+                <td>{{ form.posizione_in_campo }}</td>
+                <td>{{ form.esito_test }}</td>
+                {{ form.id }}
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <div style="margin-top:1.5rem;">
+        <button class="btn" type="submit">Salva posizioni</button>
+        <a class="btn btn-secondary" href="{% url 'progetto-detail' elemento.rack.progetto_id %}">Annulla</a>
+    </div>
+</form>
+{% endblock %}

@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+
+{% block title %}Pannello — Portale FBO{% endblock %}
+
+{% block content %}
+<h1>{% if object %}Modifica pannello{% else %}Nuovo pannello{% endif %}</h1>
+<div class="card">
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        {% if richiedi_conferma_riduzione %}
+        <p style="color:#991b1b;">
+            <label style="display:inline-flex; align-items:center; gap:0.4rem; font-weight:normal;">
+                <input type="checkbox" name="conferma_riduzione" value="1" style="width:auto;">
+                Confermo di voler eliminare le posizioni in eccesso già compilate.
+            </label>
+        </p>
+        {% endif %}
+        <button class="btn" type="submit">Salva</button>
+        <a class="btn btn-secondary" href="{% url 'progetto-detail' rack.progetto_id|default:object.rack.progetto_id %}">Annulla</a>
+    </form>
+</div>
+{% endblock %}

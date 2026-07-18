@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %}Elimina pannello — Portale FBO{% endblock %}
+
+{% block content %}
+<h1>Elimina pannello</h1>
+<div class="card">
+    <p>
+        Eliminare <strong>{{ object }}</strong> e tutte le sue posizioni compilate?
+        L'operazione è definitiva.
+    </p>
+    <form method="post">
+        {% csrf_token %}
+        <button class="btn" style="background:#ef4444;" type="submit">Elimina</button>
+        <a class="btn btn-secondary" href="{% url 'progetto-detail' object.rack.progetto_id %}">Annulla</a>
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,17 @@
+[Unit]
+Description=Report Rack - Gunicorn
+After=network.target
+
+[Service]
+Type=simple
+User=rackreport
+Group=rackreport
+WorkingDirectory=/opt/rackreport/app
+ExecStart=/opt/rackreport/app/venv/bin/gunicorn rackreport.wsgi:application \
+    --bind unix:/run/rackreport/gunicorn.sock \
+    --workers 2
+RuntimeDirectory=rackreport
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target

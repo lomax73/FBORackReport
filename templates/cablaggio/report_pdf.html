@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Report rack — {{ progetto.nome }}</title>
+<style>
+    @page {
+        size: A4 landscape;
+        margin: 1.8cm 1.5cm 2.2cm;
+        @bottom-center { content: element(footer); }
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        color: #1f2937;
+        font-size: 9.5pt;
+        margin: 0;
+    }
+    .footer {
+        position: running(footer);
+        font-size: 7.5pt;
+        color: #94a3b8;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 4pt;
+        text-align: center;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #123247;
+        padding-bottom: 10pt;
+        margin-bottom: 14pt;
+    }
+    .header .meta { text-align: right; font-size: 9pt; color: #64748b; }
+
+    .sito-box {
+        border: 2px solid #123247;
+        text-align: center;
+        font-size: 13pt;
+        font-weight: bold;
+        padding: 6pt;
+        margin-bottom: 10pt;
+    }
+    .info-row { font-size: 9pt; color: #475569; margin: 0 0 12pt; }
+    .info-row strong { color: #1f2937; }
+
+    .rack-block { margin-bottom: 18pt; }
+    .rack-title {
+        background: #123247; color: #fff; font-weight: bold;
+        padding: 5pt 8pt; margin-bottom: 6pt; font-size: 11pt;
+        page-break-after: avoid;
+    }
+
+    .panel { display: flex; margin-bottom: 8pt; border: 1px solid #1f2937; page-break-inside: avoid; }
+    .panel-label {
+        width: 26pt; display: flex; align-items: center; justify-content: center;
+        font-size: 20pt; font-weight: bold; border-right: 1px solid #1f2937;
+        background: #f1f5f9;
+    }
+    .panel-grid { flex: 1; }
+    .panel-row { display: flex; }
+    .panel-row.head { background: #f1f5f9; font-weight: bold; }
+    .cell {
+        flex: 1; min-width: 0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
+        padding: 2pt 1pt; text-align: center; font-size: 7pt; overflow: hidden;
+    }
+    .cell:last-child { border-right: none; }
+    .cell-desc {
+        height: 60pt; white-space: normal; word-break: break-word;
+        font-size: 6.5pt; display: flex; align-items: center; justify-content: center;
+    }
+    .cell-vuota { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4pt, #e2e8f0 4pt, #e2e8f0 5pt); }
+    .cell-zona { font-size: 6.5pt; font-weight: bold; background: #eaf6fc; }
+
+    .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6.5pt; font-weight: bold; color: #fff; }
+    .badge-ok { background: #22c55e; }
+    .badge-p2 { background: #f59e0b; }
+</style>
+</head>
+<body>
+
+<div class="footer">
+    FBO Solution Srl - Corso Paolo Bernacchi, 48 &ndash; 21049 Tradate (VA) &middot;
+    Tel. 0331/1587345 &middot; Email info@fbosolution.it
+</div>
+
+<div class="header">
+    <div><strong>FBO Solution</strong> — Report rack / patch panel</div>
+    <div class="meta">Report generato il {{ now|date:"d/m/Y" }} alle {{ now|time:"H:i" }}</div>
+</div>
+
+{% if progetto.sito %}<div class="sito-box">{{ progetto.sito }}</div>{% endif %}
+<p class="info-row">
+    <strong>Progetto:</strong> {{ progetto.nome }} &middot;
+    <strong>Cliente:</strong> {{ progetto.cliente.ragione_sociale }}
+    {% if progetto.data_intervento %} &middot; <strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}{% endif %}
+</p>
+
+{% for entry in rack_list %}
+<div class="rack-block">
+    <div class="rack-title">{{ entry.rack.nome }}</div>
+
+    {% for e in entry.elementi %}
+    <div class="panel">
+        <div class="panel-label">{{ e.elemento.etichetta }}</div>
+        <div class="panel-grid">
+            <div class="panel-row head">
+                <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell">{{ e.offset|add:p.numero }}</div>
+                {% endfor %}
+            </div>
+            <div class="panel-row">
+                <div class="cell" style="flex:0 0 70pt;">CABLE N&deg;</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell">{{ p.cavo_n }}</div>
+                {% endfor %}
+            </div>
+            <div class="panel-row">
+                <div class="cell" style="flex:0 0 70pt;">Descrizione</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
+                    {% if not p.non_cablata %}<div class="cell-desc">{{ p.descrizione }}</div>{% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            <div class="panel-row">
+                <div class="cell" style="flex:0 0 70pt;">Pos. in campo</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell cell-zona">{{ p.posizione_in_campo }}</div>
+                {% endfor %}
+            </div>
+            <div class="panel-row">
+                <div class="cell" style="flex:0 0 70pt;">FLUKE Check</div>
+                {% for p in e.elemento.posizioni.all %}
+                <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
+                    {% if p.esito_test == 'ok' %}<span class="badge badge-ok">OK</span>
+                    {% elif p.esito_test == 'p2' %}<span class="badge badge-p2">P2</span>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endfor %}
+
+</body>
+</html>
