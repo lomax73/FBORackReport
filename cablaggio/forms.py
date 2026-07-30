@@ -60,7 +60,7 @@ class ElementoRackForm(forms.ModelForm):
 PosizioneFormSet = inlineformset_factory(
     ElementoRack,
     Posizione,
-    fields=['cavo_n', 'tipo_cavo', 'descrizione', 'posizione_in_campo', 'esito_test'],
+    fields=['porta_label', 'cavo_n', 'tipo_cavo', 'descrizione', 'posizione_in_campo', 'esito_test'],
     extra=0,
     can_delete=False,
     widgets={

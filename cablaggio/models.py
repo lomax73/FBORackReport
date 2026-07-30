@@ -94,6 +94,14 @@ class Posizione(models.Model):
 
     elemento = models.ForeignKey(ElementoRack, on_delete=models.CASCADE, related_name='posizioni')
     numero = models.PositiveSmallIntegerField(help_text='Numero della posizione all\'interno del pannello (1..N).')
+    porta_label = models.CharField(
+        'Porta', max_length=20, blank=True,
+        help_text=(
+            "Sovrascrive il numero di porta calcolato automaticamente. "
+            "Usato per i cassetti fibra, dove la numerazione fisica delle "
+            "porte spesso non è progressiva come nei patch panel."
+        ),
+    )
     cavo_n = models.CharField('N° cavo', max_length=50, blank=True)
     tipo_cavo = models.CharField('Tipo cavo', max_length=100, blank=True)
     descrizione = models.CharField(max_length=255, blank=True)
@@ -110,6 +118,11 @@ class Posizione(models.Model):
     @property
     def non_cablata(self):
         return not self.cavo_n and not self.descrizione
+
+    def porta_display(self, offset=0):
+        """Numero di porta da mostrare: porta_label se impostata
+        manualmente (cassetti fibra), altrimenti il progressivo calcolato."""
+        return self.porta_label or str(offset + self.numero)
 
 
 class RackAllegato(models.Model):

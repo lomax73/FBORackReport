@@ -62,7 +62,15 @@
         <tbody>
             {% for form in formset.forms %}
             <tr>
-                <td>{{ offset|add:form.instance.numero }}</td>
+                <td>
+                    {% if elemento.tipo == 'cassetto_fibra' %}
+                    {{ form.porta_label }}
+                    <div style="color:#94a3b8; font-size:0.78rem;">calcolata: {{ offset|add:form.instance.numero }}</div>
+                    {% else %}
+                    {{ offset|add:form.instance.numero }}
+                    <div style="display:none;">{{ form.porta_label }}</div>
+                    {% endif %}
+                </td>
                 <td>{{ form.cavo_n }}</td>
                 <td>{{ form.tipo_cavo }}</td>
                 <td>{{ form.descrizione }}</td>

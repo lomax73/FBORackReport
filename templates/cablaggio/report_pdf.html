@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load cablaggio_extras %}<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -114,7 +114,7 @@
             <div class="panel-row head">
                 <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell">{{ e.offset|add:p.numero }}</div>
+                <div class="cell">{{ p|porta_display:e.offset }}</div>
                 {% endfor %}
             </div>
             <div class="panel-row">
