@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+{% load cablaggio_extras %}<!DOCTYPE html>
 <html lang="it">
 <head>
 <meta charset="UTF-8">
@@ -19,16 +19,14 @@
 {% if progetto.sito %}<div class="sito-box">{{ progetto.sito }}</div>{% endif %}
 
 <div class="cliente-info">
+    <div class="progetto-nome">{{ progetto.nome }}</div>
     <div class="cliente-nome">{{ progetto.cliente.ragione_sociale }}</div>
-    {% if progetto.cliente.indirizzo or progetto.cliente.citta %}
-    <div class="cliente-indirizzo">
-        {{ progetto.cliente.indirizzo }}{% if progetto.cliente.cap or progetto.cliente.citta %}, {{ progetto.cliente.cap }} {{ progetto.cliente.citta }}{% endif %}{% if progetto.cliente.provincia %} ({{ progetto.cliente.provincia }}){% endif %}
-    </div>
+    {% with indirizzo=progetto.cliente|indirizzo_completo %}
+    {% if indirizzo %}<div class="cliente-indirizzo">{{ indirizzo }}</div>{% endif %}
+    {% endwith %}
+    {% if progetto.data_intervento %}
+    <div class="data-intervento"><strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}</div>
     {% endif %}
-    <p class="info-row">
-        <strong>Progetto:</strong> {{ progetto.nome }}
-        {% if progetto.data_intervento %} &middot; <strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}{% endif %}
-    </p>
 </div>
 
 </body>

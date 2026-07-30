@@ -1,4 +1,8 @@
+{% load cablaggio_extras %}
 <div class="footer">
+    {% if progetto %}
+    {{ progetto.cliente.ragione_sociale }}{% with indirizzo=progetto.cliente|indirizzo_completo %}{% if indirizzo %} &middot; {{ indirizzo }}{% endif %}{% endwith %}<br>
+    {% endif %}
     FBO Solution Srl - Corso Paolo Bernacchi, 48 &ndash; 21049 Tradate (VA) &middot;
     Tel. 0331/1587345 &middot; Email info@fbosolution.it
 </div>

@@ -1,6 +1,10 @@
 import io
+import mimetypes
 from dataclasses import dataclass
+from pathlib import Path
+from urllib.parse import urlparse
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -13,6 +17,7 @@ from django.utils.text import slugify
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
 from pypdf import PdfReader, PdfWriter
 from weasyprint import HTML
+from weasyprint import default_url_fetcher
 
 from . import portal_client
 from .forms import ElementoRackForm, PosizioneFormSet, ProgettoForm, RackForm
@@ -364,9 +369,35 @@ def _righe_rack(rack):
     return righe
 
 
+def _fetcher_file_locali(url):
+    """Legge direttamente dal disco le immagini servite da /media/ e
+    /static/ invece di richiederle in HTTPS: sullo stesso VPS il
+    certificato è self-signed e il fetcher HTTPS di default di
+    WeasyPrint le scarta senza errore visibile (l'immagine sparisce e
+    resta il solo alt text)."""
+    path = urlparse(url).path
+    for url_prefix, radice in (
+        (f'/{settings.MEDIA_URL.strip("/")}/', settings.MEDIA_ROOT),
+        (f'/{settings.STATIC_URL.strip("/")}/', settings.STATIC_ROOT),
+    ):
+        if radice and path.startswith(url_prefix):
+            file_path = Path(radice) / path[len(url_prefix):]
+            if file_path.is_file():
+                mime_type, _ = mimetypes.guess_type(str(file_path))
+                return {
+                    'mime_type': mime_type or 'application/octet-stream',
+                    'file_obj': open(file_path, 'rb'),
+                }
+    return default_url_fetcher(url)
+
+
 def _pdf_da_html(template_name, contesto, request):
     html_string = render_to_string(template_name, contesto)
-    return HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+    return HTML(
+        string=html_string,
+        base_url=request.build_absolute_uri('/'),
+        url_fetcher=_fetcher_file_locali,
+    ).write_pdf()
 
 
 def _unisci_pdf(blocchi):
@@ -394,6 +425,7 @@ def progetto_report_pdf(request, pk):
         allegati_pdf = [a for a in rack.allegati.all() if a.file.name.lower().endswith('.pdf')]
         allegati_non_pdf = [a for a in rack.allegati.all() if not a.file.name.lower().endswith('.pdf')]
         blocchi.append(_pdf_da_html('cablaggio/report_pdf_rack.html', {
+            'progetto': progetto,
             'rack': rack,
             'righe': _righe_rack(rack),
             'allegati_pdf': allegati_pdf,
