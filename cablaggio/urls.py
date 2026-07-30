@@ -21,4 +21,6 @@ urlpatterns = [
     path('elemento/<int:pk>/elimina/', views.ElementoRackDeleteView.as_view(), name='elemento-delete'),
     path('elemento/<int:pk>/duplica/', views.elemento_duplica, name='elemento-duplica'),
     path('elemento/<int:pk>/posizioni/', views.elemento_posizioni, name='elemento-posizioni'),
+
+    path('configurazione/', views.configurazione, name='configurazione'),
 ]

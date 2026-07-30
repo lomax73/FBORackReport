@@ -13,7 +13,12 @@
         <div style="display:flex; align-items:flex-end; gap:0.4rem;">
             <div>
                 <label for="bulk-tipo_cavo">Tipo cavo</label>
-                <input type="text" id="bulk-tipo_cavo">
+                <select id="bulk-tipo_cavo">
+                    <option value="">— nessuno —</option>
+                    {% for tipo in tipi_cavo %}
+                    <option value="{{ tipo.pk }}">{{ tipo.nome }}</option>
+                    {% endfor %}
+                </select>
             </div>
             <button type="button" class="btn btn-secondary" onclick="applicaATutti('tipo_cavo')">Applica a tutti</button>
         </div>
@@ -36,8 +41,9 @@
                 <label for="bulk-esito_test">Esito test</label>
                 <select id="bulk-esito_test">
                     <option value="">— non testato —</option>
-                    <option value="ok">OK</option>
-                    <option value="p2">P2</option>
+                    {% for esito in esiti_test %}
+                    <option value="{{ esito.pk }}">{{ esito.nome }}</option>
+                    {% endfor %}
                 </select>
             </div>
             <button type="button" class="btn btn-secondary" onclick="applicaATutti('esito_test')">Applica a tutti</button>

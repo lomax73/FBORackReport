@@ -1,8 +1,8 @@
 from django import forms
-from django.forms import inlineformset_factory
+from django.forms import inlineformset_factory, modelformset_factory
 
 from . import portal_client
-from .models import ElementoRack, Posizione, Progetto, Rack
+from .models import ElementoRack, EsitoTest, Posizione, Progetto, Rack, TipoCavo
 
 
 class ProgettoForm(forms.ModelForm):
@@ -10,7 +10,7 @@ class ProgettoForm(forms.ModelForm):
 
     class Meta:
         model = Progetto
-        fields = ['nome', 'sito', 'data_intervento', 'note', 'logo_cliente']
+        fields = ['nome', 'sito', 'data_intervento', 'note', 'logo_cliente', 'mostra_schema_rack']
         widgets = {
             'data_intervento': forms.DateInput(attrs={'type': 'date'}),
             'note': forms.Textarea(attrs={'rows': 3}),
@@ -54,7 +54,7 @@ class RackForm(forms.ModelForm):
 class ElementoRackForm(forms.ModelForm):
     class Meta:
         model = ElementoRack
-        fields = ['tipo', 'etichetta', 'n_posizioni', 'ordine']
+        fields = ['tipo', 'etichetta', 'n_posizioni', 'unita_rack', 'ordine']
 
 
 PosizioneFormSet = inlineformset_factory(
@@ -66,9 +66,25 @@ PosizioneFormSet = inlineformset_factory(
     widgets={
         # class usata dal riempimento rapido in posizioni_form.html per
         # applicare un valore a tutte le righe di una colonna.
-        'tipo_cavo': forms.TextInput(attrs={'class': 'campo-bulk-tipo_cavo'}),
+        'tipo_cavo': forms.Select(attrs={'class': 'campo-bulk-tipo_cavo'}),
         'descrizione': forms.TextInput(attrs={'class': 'campo-bulk-descrizione'}),
         'posizione_in_campo': forms.TextInput(attrs={'class': 'campo-bulk-posizione_in_campo'}),
         'esito_test': forms.Select(attrs={'class': 'campo-bulk-esito_test'}),
     },
+)
+
+
+TipoCavoFormSet = modelformset_factory(
+    TipoCavo,
+    fields=['nome', 'ordine'],
+    extra=1,
+    can_delete=True,
+)
+
+EsitoTestFormSet = modelformset_factory(
+    EsitoTest,
+    fields=['nome', 'colore', 'ordine'],
+    extra=1,
+    can_delete=True,
+    widgets={'colore': forms.TextInput(attrs={'type': 'color'})},
 )

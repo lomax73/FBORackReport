@@ -40,7 +40,7 @@
             <div class="cell" style="flex:0 0 60pt;">Tipo cavo</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
-                <div class="cell-vert">{{ p.tipo_cavo }}</div>
+                <div class="cell-vert">{{ p.tipo_cavo.nome }}</div>
             </div>
             {% endfor %}
         </div>
@@ -64,9 +64,7 @@
             <div class="cell" style="flex:0 0 70pt;">FLUKE Check</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
-                {% if p.esito_test == 'ok' %}<span class="badge badge-ok">OK</span>
-                {% elif p.esito_test == 'p2' %}<span class="badge badge-p2">P2</span>
-                {% endif %}
+                {% if p.esito_test %}<span class="badge" style="background:{{ p.esito_test.colore }};">{{ p.esito_test.nome }}</span>{% endif %}
             </div>
             {% endfor %}
         </div>

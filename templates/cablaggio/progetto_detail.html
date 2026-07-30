@@ -1,4 +1,5 @@
 {% extends "base.html" %}
+{% load cablaggio_extras %}
 
 {% block title %}{{ progetto.nome }} — Report Rack{% endblock %}
 
@@ -30,6 +31,27 @@
         </div>
     </div>
 </div>
+
+{% if rack_list %}
+<h2 style="margin-top:2rem;">Schema rack</h2>
+<div class="schema-racks">
+    {% for entry in rack_list %}
+    <div class="schema-rack">
+        <div class="schema-rack-titolo">{{ entry.rack.nome }}{% if entry.rack.posizione %} — {{ entry.rack.posizione }}{% endif %}</div>
+        <div class="schema-rack-body">
+            {% for e in entry.elementi %}
+            <div class="schema-pannello">
+                <div class="schema-pannello-blocco" style="height:{{ e.elemento.unita_rack|moltiplica:22 }}px;">{{ e.elemento.etichetta }}</div>
+                <div class="schema-pannello-info">{{ e.elemento.get_tipo_display }} &middot; {{ e.elemento.n_posizioni }} porte &middot; {{ e.elemento.unita_rack }}U</div>
+            </div>
+            {% empty %}
+            <div class="schema-pannello-info" style="padding:0.6rem 0.75rem;">Nessun pannello.</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endif %}
 
 <div style="display:flex; align-items:center; justify-content:space-between; margin-top:2rem; margin-bottom:0.5rem;">
     <h2 style="margin:0;">Rack</h2>
@@ -65,8 +87,9 @@
                 <td>{{ e.elemento.get_tipo_display }}</td>
                 <td>{{ e.offset|add:1 }}–{{ e.offset|add:e.elemento.n_posizioni }}</td>
                 <td>
-                    <span class="badge" style="background:#22c55e;">{{ e.riepilogo.ok }} OK</span>
-                    <span class="badge" style="background:#f59e0b;">{{ e.riepilogo.p2 }} P2</span>
+                    {% for voce in e.riepilogo.per_esito %}
+                    <span class="badge" style="background:{{ voce.esito.colore }};">{{ voce.conteggio }} {{ voce.esito.nome }}</span>
+                    {% endfor %}
                     <span class="badge" style="background:#9ca3af;">{{ e.riepilogo.non_cablate }} non cablate</span>
                 </td>
                 <td style="white-space:nowrap;">

@@ -20,8 +20,15 @@ from weasyprint import HTML
 from weasyprint import default_url_fetcher
 
 from . import portal_client
-from .forms import ElementoRackForm, PosizioneFormSet, ProgettoForm, RackForm
-from .models import ElementoRack, Posizione, Progetto, Rack, RackAllegato
+from .forms import (
+    ElementoRackForm,
+    EsitoTestFormSet,
+    PosizioneFormSet,
+    ProgettoForm,
+    RackForm,
+    TipoCavoFormSet,
+)
+from .models import ElementoRack, EsitoTest, Posizione, Progetto, Rack, RackAllegato, TipoCavo
 
 
 @dataclass
@@ -297,6 +304,7 @@ def elemento_duplica(request, pk):
         tipo=originale.tipo,
         etichetta=_etichetta_duplicata(originale.rack, originale.etichetta),
         n_posizioni=originale.n_posizioni,
+        unita_rack=originale.unita_rack,
         ordine=originale.ordine,
     )
     sync_posizioni(duplicato)
@@ -321,6 +329,29 @@ def elemento_posizioni(request, pk):
         'elemento': elemento,
         'formset': formset,
         'offset': offset,
+        'tipi_cavo': TipoCavo.objects.all(),
+        'esiti_test': EsitoTest.objects.all(),
+    })
+
+
+# --- Configurazione -------------------------------------------------------
+
+@login_required
+def configurazione(request):
+    if request.method == 'POST':
+        tipo_formset = TipoCavoFormSet(request.POST, prefix='tipocavo', queryset=TipoCavo.objects.all())
+        esito_formset = EsitoTestFormSet(request.POST, prefix='esitotest', queryset=EsitoTest.objects.all())
+        if tipo_formset.is_valid() and esito_formset.is_valid():
+            tipo_formset.save()
+            esito_formset.save()
+            messages.success(request, 'Configurazione aggiornata.')
+            return redirect('configurazione')
+    else:
+        tipo_formset = TipoCavoFormSet(prefix='tipocavo', queryset=TipoCavo.objects.all())
+        esito_formset = EsitoTestFormSet(prefix='esitotest', queryset=EsitoTest.objects.all())
+    return render(request, 'cablaggio/configurazione.html', {
+        'tipo_formset': tipo_formset,
+        'esito_formset': esito_formset,
     })
 
 
@@ -420,6 +451,11 @@ def progetto_report_pdf(request, pk):
         'progetto': progetto,
         'now': timezone.localtime(),
     }, request)]
+
+    if progetto.mostra_schema_rack:
+        blocchi.append(_pdf_da_html('cablaggio/report_pdf_schema.html', {
+            'progetto': progetto,
+        }, request))
 
     for rack in progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'):
         allegati_pdf = [a for a in rack.allegati.all() if a.file.name.lower().endswith('.pdf')]

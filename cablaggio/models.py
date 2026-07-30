@@ -24,6 +24,10 @@ class Progetto(models.Model):
         'Logo cliente', upload_to='loghi_cliente/%Y/%m/', blank=True, null=True,
         help_text='Mostrato in testa alla scheda progetto e nella prima pagina del report PDF.',
     )
+    mostra_schema_rack = models.BooleanField(
+        'Includi schema grafico rack nel PDF', default=True,
+        help_text='Se attivo, il report PDF include una pagina con lo schema grafico dei rack e dei pannelli.',
+    )
     creato_il = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -68,6 +72,10 @@ class ElementoRack(models.Model):
     tipo = models.CharField(max_length=20, choices=TIPO_CHOICES)
     etichetta = models.CharField('Etichetta', max_length=10, help_text='Es. "A", "B", "C".')
     n_posizioni = models.PositiveSmallIntegerField('Posizioni', choices=DIMENSIONE_CHOICES)
+    unita_rack = models.PositiveSmallIntegerField(
+        'Unità rack (U)', default=1,
+        help_text='Quante unità rack (U) occupa fisicamente questo pannello, per lo schema grafico.',
+    )
     ordine = models.PositiveIntegerField(default=0)
 
     class Meta:
@@ -77,25 +85,56 @@ class ElementoRack(models.Model):
         return f'{self.get_tipo_display()} {self.etichetta}'
 
     def esito_riepilogo(self):
-        """Conteggio posizioni per esito, per il riepilogo nel dettaglio progetto."""
+        """Conteggio posizioni per esito (con relativo colore) e non cablate,
+        per il riepilogo nel dettaglio progetto."""
         posizioni = list(self.posizioni.all())
+        conteggi = {}
+        for p in posizioni:
+            if p.esito_test:
+                conteggi[p.esito_test] = conteggi.get(p.esito_test, 0) + 1
         return {
-            'ok': sum(1 for p in posizioni if p.esito_test == Posizione.ESITO_OK),
-            'p2': sum(1 for p in posizioni if p.esito_test == Posizione.ESITO_P2),
+            'per_esito': [
+                {'esito': esito, 'conteggio': conteggio}
+                for esito, conteggio in sorted(conteggi.items(), key=lambda kv: (kv[0].ordine, kv[0].nome))
+            ],
             'non_cablate': sum(1 for p in posizioni if not p.cavo_n and not p.descrizione),
             'totale': len(posizioni),
         }
 
 
-class Posizione(models.Model):
-    ESITO_OK = 'ok'
-    ESITO_P2 = 'p2'
-    ESITO_CHOICES = [
-        ('', '— non testato —'),
-        (ESITO_OK, 'OK'),
-        (ESITO_P2, 'P2'),
-    ]
+class TipoCavo(models.Model):
+    """Voce configurabile per il menu a discesa 'Tipo cavo' (pagina di
+    configurazione)."""
 
+    nome = models.CharField(max_length=100, unique=True)
+    ordine = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['ordine', 'nome']
+
+    def __str__(self):
+        return self.nome
+
+
+class EsitoTest(models.Model):
+    """Voce configurabile per il menu a discesa 'Esito test' (pagina di
+    configurazione), con un colore per il badge nel report PDF."""
+
+    nome = models.CharField(max_length=50, unique=True)
+    colore = models.CharField(
+        max_length=7, default='#22c55e',
+        help_text='Colore del badge nel report PDF, in formato esadecimale (es. #22c55e).',
+    )
+    ordine = models.PositiveIntegerField(default=0)
+
+    class Meta:
+        ordering = ['ordine', 'nome']
+
+    def __str__(self):
+        return self.nome
+
+
+class Posizione(models.Model):
     elemento = models.ForeignKey(ElementoRack, on_delete=models.CASCADE, related_name='posizioni')
     numero = models.PositiveSmallIntegerField(help_text='Numero della posizione all\'interno del pannello (1..N).')
     porta_label = models.CharField(
@@ -107,10 +146,16 @@ class Posizione(models.Model):
         ),
     )
     cavo_n = models.CharField('N° cavo', max_length=50, blank=True)
-    tipo_cavo = models.CharField('Tipo cavo', max_length=100, blank=True)
+    tipo_cavo = models.ForeignKey(
+        TipoCavo, verbose_name='Tipo cavo', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='posizioni',
+    )
     descrizione = models.CharField(max_length=255, blank=True)
     posizione_in_campo = models.CharField(max_length=100, blank=True)
-    esito_test = models.CharField(max_length=2, choices=ESITO_CHOICES, blank=True)
+    esito_test = models.ForeignKey(
+        EsitoTest, verbose_name='Esito test', null=True, blank=True,
+        on_delete=models.SET_NULL, related_name='posizioni',
+    )
 
     class Meta:
         ordering = ['numero']

@@ -9,6 +9,11 @@ def porta_display(posizione, offset):
 
 
 @register.filter
+def moltiplica(valore, fattore):
+    return valore * fattore
+
+
+@register.filter
 def indirizzo_completo(cliente):
     """Indirizzo del cliente su una riga: 'Via X, CAP Città (PR)'."""
     if not cliente:

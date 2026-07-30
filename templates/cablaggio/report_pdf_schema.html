@@ -1,0 +1,33 @@
+{% load cablaggio_extras %}<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Schema rack — {{ progetto.nome }}</title>
+{% include "cablaggio/_report_pdf_style.html" %}
+</head>
+<body>
+
+{% include "cablaggio/_report_pdf_footer.html" %}
+
+<div class="rack-title" style="margin-bottom:14pt;">Schema rack</div>
+
+<div class="schema-racks">
+    {% for rack in progetto.rack_set.all %}
+    <div class="schema-rack">
+        <div class="schema-rack-titolo">{{ rack.nome }}{% if rack.posizione %} — {{ rack.posizione }}{% endif %}</div>
+        <div class="schema-rack-body">
+            {% for elemento in rack.elementi.all %}
+            <div class="schema-pannello">
+                <div class="schema-pannello-blocco" style="height:{{ elemento.unita_rack|moltiplica:10 }}pt;">{{ elemento.etichetta }}</div>
+                <div class="schema-pannello-info">{{ elemento.get_tipo_display }} &middot; {{ elemento.n_posizioni }} porte &middot; {{ elemento.unita_rack }}U</div>
+            </div>
+            {% empty %}
+            <div class="schema-pannello-info" style="padding:5pt;">Nessun pannello.</div>
+            {% endfor %}
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+</html>

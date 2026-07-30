@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Configurazione — Report Rack{% endblock %}
+
+{% block content %}
+<h1>Configurazione</h1>
+<p style="color:#64748b;">Valori disponibili nei menu a discesa "Tipo cavo" ed "Esito test" quando si compilano le posizioni.</p>
+
+<form method="post">
+    {% csrf_token %}
+
+    <div class="card">
+        <h2 style="margin-top:0;">Tipo cavo</h2>
+        {{ tipo_formset.management_form }}
+        <table>
+            <thead>
+                <tr><th>Nome</th><th>Ordine</th><th>Elimina</th></tr>
+            </thead>
+            <tbody>
+                {% for form in tipo_formset.forms %}
+                <tr>
+                    <td>{{ form.nome }}{{ form.id }}</td>
+                    <td style="width:100px;">{{ form.ordine }}</td>
+                    <td style="width:80px;">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <div class="card">
+        <h2 style="margin-top:0;">Esito test</h2>
+        {{ esito_formset.management_form }}
+        <table>
+            <thead>
+                <tr><th>Nome</th><th>Colore</th><th>Ordine</th><th>Elimina</th></tr>
+            </thead>
+            <tbody>
+                {% for form in esito_formset.forms %}
+                <tr>
+                    <td>{{ form.nome }}{{ form.id }}</td>
+                    <td style="width:80px;">{{ form.colore }}</td>
+                    <td style="width:100px;">{{ form.ordine }}</td>
+                    <td style="width:80px;">{% if form.instance.pk %}{{ form.DELETE }}{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <button class="btn" type="submit">Salva configurazione</button>
+</form>
+{% endblock %}

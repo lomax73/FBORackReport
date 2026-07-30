@@ -86,8 +86,19 @@
     .porta-locale { color: #94a3b8; font-size: 5pt; font-weight: normal; }
 
     .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6pt; font-weight: bold; color: #fff; }
-    .badge-ok { background: #22c55e; }
-    .badge-p2 { background: #f59e0b; }
+
+    .schema-racks { display: flex; gap: 14pt; flex-wrap: wrap; }
+    .schema-rack { border: 1.5pt solid #123247; border-radius: 4pt; overflow: hidden; min-width: 140pt; page-break-inside: avoid; margin-bottom: 12pt; }
+    .schema-rack-titolo { background: #123247; color: #fff; padding: 4pt 6pt; font-weight: bold; font-size: 9pt; }
+    .schema-rack-body { display: flex; flex-direction: column; }
+    .schema-pannello { display: flex; align-items: stretch; border-bottom: 0.5pt solid #e2e8f0; }
+    .schema-pannello:last-child { border-bottom: none; }
+    .schema-pannello-blocco {
+        width: 30pt; min-height: 16pt; background: #eaf6fc; border-right: 0.5pt solid #e2e8f0;
+        display: flex; align-items: center; justify-content: center; font-weight: bold; color: #123247;
+        font-size: 8pt; flex-shrink: 0;
+    }
+    .schema-pannello-info { padding: 3pt 6pt; font-size: 7.5pt; color: #475569; display: flex; align-items: center; }
 
     .allegati-block { margin: 4pt 0 12pt; page-break-inside: avoid; }
     .allegati-block h4 {

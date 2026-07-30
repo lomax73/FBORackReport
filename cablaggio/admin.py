@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import ElementoRack, Posizione, Progetto, Rack, RackAllegato
+from .models import ElementoRack, EsitoTest, Posizione, Progetto, Rack, RackAllegato, TipoCavo
 
 
 class RackInline(admin.TabularInline):
@@ -40,3 +40,13 @@ class ElementoRackAdmin(admin.ModelAdmin):
 @admin.register(RackAllegato)
 class RackAllegatoAdmin(admin.ModelAdmin):
     list_display = ('nome_originale', 'rack', 'caricato_il')
+
+
+@admin.register(TipoCavo)
+class TipoCavoAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'ordine')
+
+
+@admin.register(EsitoTest)
+class EsitoTestAdmin(admin.ModelAdmin):
+    list_display = ('nome', 'colore', 'ordine')
