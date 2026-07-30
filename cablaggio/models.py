@@ -20,6 +20,10 @@ class Progetto(models.Model):
     )
     data_intervento = models.DateField(null=True, blank=True)
     note = models.TextField(blank=True)
+    logo_cliente = models.ImageField(
+        'Logo cliente', upload_to='loghi_cliente/%Y/%m/', blank=True, null=True,
+        help_text='Mostrato in testa alla scheda progetto e nella prima pagina del report PDF.',
+    )
     creato_il = models.DateTimeField(auto_now_add=True)
 
     class Meta:

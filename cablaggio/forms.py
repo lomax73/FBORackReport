@@ -10,7 +10,7 @@ class ProgettoForm(forms.ModelForm):
 
     class Meta:
         model = Progetto
-        fields = ['nome', 'sito', 'data_intervento', 'note']
+        fields = ['nome', 'sito', 'data_intervento', 'note', 'logo_cliente']
         widgets = {
             'data_intervento': forms.DateInput(attrs={'type': 'date'}),
             'note': forms.Textarea(attrs={'rows': 3}),

@@ -5,7 +5,7 @@
 {% block content %}
 <h1>{% if object %}Modifica progetto{% else %}Nuovo progetto{% endif %}</h1>
 <div class="card">
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button class="btn" type="submit">Salva</button>

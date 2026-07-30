@@ -13,10 +13,22 @@
 </div>
 
 <div class="card">
-    <p><strong>Cliente:</strong> {{ progetto.cliente.ragione_sociale }}</p>
-    {% if progetto.sito %}<p><strong>Sito / cliente finale:</strong> {{ progetto.sito }}</p>{% endif %}
-    {% if progetto.data_intervento %}<p><strong>Data intervento:</strong> {{ progetto.data_intervento }}</p>{% endif %}
-    {% if progetto.note %}<p><strong>Note:</strong> {{ progetto.note }}</p>{% endif %}
+    <div style="display:flex; gap:1.5rem; align-items:flex-start;">
+        {% if progetto.logo_cliente %}
+        <img src="{{ progetto.logo_cliente.url }}" alt="Logo cliente" style="max-width:160px; max-height:110px; object-fit:contain; flex-shrink:0;">
+        {% endif %}
+        <div style="flex:1; min-width:0;">
+            <h2 style="margin:0 0 0.25rem;">{{ progetto.cliente.ragione_sociale }}</h2>
+            {% if progetto.cliente.indirizzo or progetto.cliente.citta %}
+            <p style="margin:0; color:#64748b;">
+                {{ progetto.cliente.indirizzo }}{% if progetto.cliente.cap or progetto.cliente.citta %}, {{ progetto.cliente.cap }} {{ progetto.cliente.citta }}{% endif %}{% if progetto.cliente.provincia %} ({{ progetto.cliente.provincia }}){% endif %}
+            </p>
+            {% endif %}
+            {% if progetto.sito %}<p style="margin:0.6rem 0 0;"><strong>Sito / cliente finale:</strong> {{ progetto.sito }}</p>{% endif %}
+            {% if progetto.data_intervento %}<p style="margin:0.3rem 0 0;"><strong>Data intervento:</strong> {{ progetto.data_intervento }}</p>{% endif %}
+            {% if progetto.note %}<p style="margin:0.6rem 0 0; color:#64748b;">{{ progetto.note }}</p>{% endif %}
+        </div>
+    </div>
 </div>
 
 <div style="display:flex; align-items:center; justify-content:space-between; margin-top:2rem; margin-bottom:0.5rem;">

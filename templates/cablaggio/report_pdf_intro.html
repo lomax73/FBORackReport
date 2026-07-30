@@ -9,17 +9,27 @@
 
 {% include "cablaggio/_report_pdf_footer.html" %}
 
-<div class="header">
-    <div><strong>FBO Solution</strong> — Report rack / patch panel</div>
+<div class="header-progetto">
+    <div class="logo-cliente">
+        {% if progetto.logo_cliente %}<img src="{{ progetto.logo_cliente.url }}" alt="Logo cliente">{% endif %}
+    </div>
     <div class="meta">Report generato il {{ now|date:"d/m/Y" }} alle {{ now|time:"H:i" }}</div>
 </div>
 
 {% if progetto.sito %}<div class="sito-box">{{ progetto.sito }}</div>{% endif %}
-<p class="info-row">
-    <strong>Progetto:</strong> {{ progetto.nome }} &middot;
-    <strong>Cliente:</strong> {{ progetto.cliente.ragione_sociale }}
-    {% if progetto.data_intervento %} &middot; <strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}{% endif %}
-</p>
+
+<div class="cliente-info">
+    <div class="cliente-nome">{{ progetto.cliente.ragione_sociale }}</div>
+    {% if progetto.cliente.indirizzo or progetto.cliente.citta %}
+    <div class="cliente-indirizzo">
+        {{ progetto.cliente.indirizzo }}{% if progetto.cliente.cap or progetto.cliente.citta %}, {{ progetto.cliente.cap }} {{ progetto.cliente.citta }}{% endif %}{% if progetto.cliente.provincia %} ({{ progetto.cliente.provincia }}){% endif %}
+    </div>
+    {% endif %}
+    <p class="info-row">
+        <strong>Progetto:</strong> {{ progetto.nome }}
+        {% if progetto.data_intervento %} &middot; <strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}{% endif %}
+    </p>
+</div>
 
 </body>
 </html>
