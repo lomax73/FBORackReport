@@ -68,6 +68,7 @@
                     <div style="color:#94a3b8; font-size:0.78rem;">calcolata: {{ offset|add:form.instance.numero }}</div>
                     {% else %}
                     {{ offset|add:form.instance.numero }}
+                    <div style="color:#94a3b8; font-size:0.78rem;">porta {{ form.instance.numero }}</div>
                     <div style="display:none;">{{ form.porta_label }}</div>
                     {% endif %}
                 </td>

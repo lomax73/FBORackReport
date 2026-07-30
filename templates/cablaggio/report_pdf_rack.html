@@ -22,7 +22,10 @@
         <div class="panel-row head">
             <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
             {% for p in riga.elemento.posizioni.all %}
-            <div class="cell">{{ p|porta_display:riga.offset }}</div>
+            <div class="cell">
+                {{ p|porta_display:riga.offset }}
+                {% if riga.elemento.tipo == 'patch_panel' %}<div class="porta-locale">{{ p.numero }}</div>{% endif %}
+            </div>
             {% endfor %}
         </div>
         <div class="panel-row">
