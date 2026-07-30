@@ -6,6 +6,45 @@
 <h1>Posizioni — {{ elemento }}</h1>
 <p style="color:#64748b;">Rack: {{ elemento.rack.nome }}</p>
 
+<div class="card" style="margin-bottom:1rem;">
+    <strong style="display:block; margin-bottom:0.6rem;">Riempimento rapido</strong>
+    <p style="color:#64748b; margin-top:0; font-size:0.9rem;">Imposta un valore e applicalo a tutte le righe sottostanti.</p>
+    <div style="display:flex; flex-wrap:wrap; gap:1rem;">
+        <div style="display:flex; align-items:flex-end; gap:0.4rem;">
+            <div>
+                <label for="bulk-tipo_cavo">Tipo cavo</label>
+                <input type="text" id="bulk-tipo_cavo">
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="applicaATutti('tipo_cavo')">Applica a tutti</button>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:0.4rem;">
+            <div>
+                <label for="bulk-descrizione">Descrizione</label>
+                <input type="text" id="bulk-descrizione">
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="applicaATutti('descrizione')">Applica a tutti</button>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:0.4rem;">
+            <div>
+                <label for="bulk-posizione_in_campo">Posizione in campo</label>
+                <input type="text" id="bulk-posizione_in_campo">
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="applicaATutti('posizione_in_campo')">Applica a tutti</button>
+        </div>
+        <div style="display:flex; align-items:flex-end; gap:0.4rem;">
+            <div>
+                <label for="bulk-esito_test">Esito test</label>
+                <select id="bulk-esito_test">
+                    <option value="">— non testato —</option>
+                    <option value="ok">OK</option>
+                    <option value="p2">P2</option>
+                </select>
+            </div>
+            <button type="button" class="btn btn-secondary" onclick="applicaATutti('esito_test')">Applica a tutti</button>
+        </div>
+    </div>
+</div>
+
 <form method="post">
     {% csrf_token %}
     {{ formset.management_form }}
@@ -39,4 +78,14 @@
         <a class="btn btn-secondary" href="{% url 'progetto-detail' elemento.rack.progetto_id %}">Annulla</a>
     </div>
 </form>
+
+<script>
+    function applicaATutti(campo) {
+        var sorgente = document.getElementById('bulk-' + campo);
+        var valore = sorgente.value;
+        document.querySelectorAll('.campo-bulk-' + campo).forEach(function (el) {
+            el.value = valore;
+        });
+    }
+</script>
 {% endblock %}

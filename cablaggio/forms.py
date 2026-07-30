@@ -63,4 +63,12 @@ PosizioneFormSet = inlineformset_factory(
     fields=['cavo_n', 'tipo_cavo', 'descrizione', 'posizione_in_campo', 'esito_test'],
     extra=0,
     can_delete=False,
+    widgets={
+        # class usata dal riempimento rapido in posizioni_form.html per
+        # applicare un valore a tutte le righe di una colonna.
+        'tipo_cavo': forms.TextInput(attrs={'class': 'campo-bulk-tipo_cavo'}),
+        'descrizione': forms.TextInput(attrs={'class': 'campo-bulk-descrizione'}),
+        'posizione_in_campo': forms.TextInput(attrs={'class': 'campo-bulk-posizione_in_campo'}),
+        'esito_test': forms.Select(attrs={'class': 'campo-bulk-esito_test'}),
+    },
 )

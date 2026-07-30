@@ -260,6 +260,43 @@ class ElementoRackDeleteView(LoginRequiredMixin, DeleteView):
         return reverse('progetto-detail', args=[self.object.rack.progetto_id])
 
 
+def _etichetta_duplicata(rack, etichetta):
+    """Etichetta libera per un pannello duplicato: la lettera successiva se
+    l'originale è una singola lettera, altrimenti 'etichetta copia'."""
+    esistenti = set(rack.elementi.values_list('etichetta', flat=True))
+    if len(etichetta) == 1 and etichetta.isalpha():
+        codice = ord(etichetta.upper())
+        while codice < ord('Z'):
+            codice += 1
+            candidata = chr(codice)
+            if candidata not in esistenti:
+                return candidata
+    base = f'{etichetta} copia'
+    candidata = base
+    n = 2
+    while candidata in esistenti:
+        candidata = f'{base} {n}'
+        n += 1
+    return candidata[:10]
+
+
+@login_required
+def elemento_duplica(request, pk):
+    if request.method != 'POST':
+        return redirect('progetto-detail', pk=get_object_or_404(ElementoRack, pk=pk).rack.progetto_id)
+    originale = get_object_or_404(ElementoRack, pk=pk)
+    duplicato = ElementoRack.objects.create(
+        rack=originale.rack,
+        tipo=originale.tipo,
+        etichetta=_etichetta_duplicata(originale.rack, originale.etichetta),
+        n_posizioni=originale.n_posizioni,
+        ordine=originale.ordine,
+    )
+    sync_posizioni(duplicato)
+    messages.success(request, f'Pannello "{duplicato.etichetta}" creato come copia di "{originale.etichetta}".')
+    return redirect('progetto-detail', pk=originale.rack.progetto_id)
+
+
 @login_required
 def elemento_posizioni(request, pk):
     elemento = get_object_or_404(ElementoRack, pk=pk)

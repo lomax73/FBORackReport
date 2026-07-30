@@ -60,7 +60,11 @@
                 <td style="white-space:nowrap;">
                     <a href="{% url 'elemento-posizioni' e.elemento.pk %}">Compila posizioni</a> &middot;
                     <a href="{% url 'elemento-update' e.elemento.pk %}">Modifica</a> &middot;
-                    <a href="{% url 'elemento-delete' e.elemento.pk %}">Elimina</a>
+                    <a href="{% url 'elemento-delete' e.elemento.pk %}">Elimina</a> &middot;
+                    <form method="post" action="{% url 'elemento-duplica' e.elemento.pk %}" style="display:inline;" onsubmit="return confirm('Duplicare il pannello {{ e.elemento.etichetta }}?');">
+                        {% csrf_token %}
+                        <button type="submit" title="Duplica pannello" style="background:none; border:none; padding:0; cursor:pointer; color:var(--azure-dark); font-size:1rem; vertical-align:middle;">⧉</button>
+                    </form>
                 </td>
             </tr>
             {% endfor %}

@@ -19,5 +19,6 @@ urlpatterns = [
     path('rack/<int:rack_pk>/elemento/nuovo/', views.ElementoRackCreateView.as_view(), name='elemento-create'),
     path('elemento/<int:pk>/modifica/', views.ElementoRackUpdateView.as_view(), name='elemento-update'),
     path('elemento/<int:pk>/elimina/', views.ElementoRackDeleteView.as_view(), name='elemento-delete'),
+    path('elemento/<int:pk>/duplica/', views.elemento_duplica, name='elemento-duplica'),
     path('elemento/<int:pk>/posizioni/', views.elemento_posizioni, name='elemento-posizioni'),
 ]
