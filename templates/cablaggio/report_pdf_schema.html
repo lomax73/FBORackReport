@@ -18,7 +18,7 @@
         <div class="schema-rack-body">
             {% for elemento in rack.elementi.all %}
             <div class="schema-pannello">
-                <div class="schema-pannello-blocco" style="height:{{ elemento.unita_rack|moltiplica:10 }}pt;">{{ elemento.etichetta }}</div>
+                <div class="schema-pannello-blocco" style="min-height:{{ elemento.unita_rack|moltiplica:10 }}pt;">{{ elemento.etichetta }}</div>
                 <div class="schema-pannello-info">{{ elemento.get_tipo_display }} &middot; {{ elemento.n_posizioni }} porte &middot; {{ elemento.unita_rack }}U</div>
             </div>
             {% empty %}
