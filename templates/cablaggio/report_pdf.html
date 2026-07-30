@@ -76,8 +76,8 @@
     .cell-vert {
         position: absolute; top: 50%; left: 50%;
         width: 38pt;
-        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-        text-align: center;
+        white-space: normal; word-break: break-word; overflow: hidden;
+        text-align: center; line-height: 1.15;
         transform: translate(-50%, -50%) rotate(-90deg);
         font-size: 6pt;
     }
@@ -87,6 +87,12 @@
     .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6pt; font-weight: bold; color: #fff; }
     .badge-ok { background: #22c55e; }
     .badge-p2 { background: #f59e0b; }
+
+    .allegati-block { margin: 4pt 0 12pt; page-break-inside: avoid; }
+    .allegati-block h4 {
+        margin: 0 0 3pt; font-size: 9pt; color: #123247;
+    }
+    .allegati-block ul { margin: 0; padding-left: 14pt; font-size: 8pt; color: #475569; }
 </style>
 </head>
 <body>
@@ -169,6 +175,16 @@
         </div>
     </div>
 </div>
+{% if riga.ultimo_del_rack and riga.rack.allegati.all %}
+<div class="allegati-block">
+    <h4>Allegati — {{ riga.rack.nome }}</h4>
+    <ul>
+        {% for allegato in riga.rack.allegati.all %}
+        <li>{{ allegato.nome_originale|default:allegato.file.name }}</li>
+        {% endfor %}
+    </ul>
+</div>
+{% endif %}
 {% endfor %}
 
 </body>

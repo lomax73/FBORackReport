@@ -349,15 +349,18 @@ PANNELLI_PER_PAGINA = 2
 def _righe_report(progetto):
     """Sequenza piatta di pannelli (con il titolo rack da mostrare sopra),
     con 2 pannelli per pagina nel PDF: il titolo rack va ripetuto se una
-    pagina inizia a metà di un rack."""
+    pagina inizia a metà di un rack. L'ultimo pannello di ogni rack segna
+    anche dove stampare gli allegati di quel rack."""
     righe = []
-    for rack in progetto.rack_set.prefetch_related('elementi__posizioni'):
-        for indice, (elemento, offset) in enumerate(elementi_con_offset(rack)):
+    for rack in progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'):
+        elementi = elementi_con_offset(rack)
+        for indice, (elemento, offset) in enumerate(elementi):
             righe.append({
                 'rack': rack,
                 'elemento': elemento,
                 'offset': offset,
                 'nuovo_rack': indice == 0,
+                'ultimo_del_rack': indice == len(elementi) - 1,
             })
     for i, riga in enumerate(righe):
         inizio_pagina = i > 0 and i % PANNELLI_PER_PAGINA == 0
