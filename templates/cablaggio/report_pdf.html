@@ -55,10 +55,12 @@
 
     .panel { display: flex; margin-bottom: 8pt; border: 1px solid #1f2937; page-break-inside: avoid; }
     .panel-label {
-        width: 20pt; display: flex; align-items: center; justify-content: center;
-        font-size: 14pt; font-weight: bold; border-right: 1px solid #1f2937;
-        background: #f1f5f9;
+        width: auto; min-width: 18pt; max-width: 46pt; flex-shrink: 0;
+        display: flex; align-items: center; justify-content: center; text-align: center;
+        padding: 2pt 3pt; font-size: 13pt; font-weight: bold; border-right: 1px solid #1f2937;
+        background: #f1f5f9; overflow: hidden; word-break: break-word; line-height: 1.05;
     }
+    .panel-label.etichetta-lunga { font-size: 8pt; }
     .panel-grid { flex: 1; }
     .panel-row { display: flex; }
     .panel-row.head { background: #f1f5f9; font-weight: bold; }
@@ -67,22 +69,17 @@
         padding: 1.5pt 1pt; text-align: center; font-size: 6pt; overflow: hidden;
     }
     .cell:last-child { border-right: none; }
-    .cell-vert-row { height: 46pt; position: relative; }
+    .cell-vert-row { height: 68pt; position: relative; }
     .cell-vert {
         position: absolute; top: 50%; left: 50%;
-        white-space: nowrap;
-        transform: translate(-50%, -50%) rotate(-90deg);
-        font-size: 6pt;
-    }
-    .cell-desc-row { height: 70pt; position: relative; }
-    .cell-desc {
-        position: absolute; top: 50%; left: 50%;
-        white-space: nowrap;
+        width: 64pt;
+        white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+        text-align: center;
         transform: translate(-50%, -50%) rotate(-90deg);
         font-size: 6pt;
     }
     .cell-vuota { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4pt, #e2e8f0 4pt, #e2e8f0 5pt); }
-    .cell-zona { font-size: 6pt; font-weight: bold; background: #eaf6fc; }
+    .cell-zona { font-weight: bold; background: #eaf6fc; }
 
     .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6pt; font-weight: bold; color: #fff; }
     .badge-ok { background: #22c55e; }
@@ -116,7 +113,7 @@
 
     {% for e in entry.elementi %}
     <div class="panel">
-        <div class="panel-label">{{ e.elemento.etichetta }}</div>
+        <div class="panel-label{% if e.elemento.etichetta|length > 2 %} etichetta-lunga{% endif %}">{{ e.elemento.etichetta }}</div>
         <div class="panel-grid">
             <div class="panel-row head">
                 <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
@@ -143,8 +140,8 @@
             <div class="panel-row">
                 <div class="cell" style="flex:0 0 60pt;">Descrizione</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell cell-desc-row {% if p.non_cablata %}cell-vuota{% endif %}">
-                    {% if not p.non_cablata %}<div class="cell-desc">{{ p.descrizione }}</div>{% endif %}
+                <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
+                    {% if not p.non_cablata %}<div class="cell-vert">{{ p.descrizione }}</div>{% endif %}
                 </div>
                 {% endfor %}
             </div>
