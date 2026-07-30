@@ -55,8 +55,8 @@
 
     .panel { display: flex; margin-bottom: 8pt; border: 1px solid #1f2937; page-break-inside: avoid; }
     .panel-label {
-        width: 26pt; display: flex; align-items: center; justify-content: center;
-        font-size: 20pt; font-weight: bold; border-right: 1px solid #1f2937;
+        width: 20pt; display: flex; align-items: center; justify-content: center;
+        font-size: 14pt; font-weight: bold; border-right: 1px solid #1f2937;
         background: #f1f5f9;
     }
     .panel-grid { flex: 1; }
@@ -64,20 +64,27 @@
     .panel-row.head { background: #f1f5f9; font-weight: bold; }
     .cell {
         flex: 1; min-width: 0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
-        padding: 2pt 1pt; text-align: center; font-size: 7pt; overflow: hidden;
+        padding: 1.5pt 1pt; text-align: center; font-size: 6pt; overflow: hidden;
     }
     .cell:last-child { border-right: none; }
-    .cell-desc-row { height: 85pt; position: relative; }
+    .cell-vert-row { height: 46pt; position: relative; }
+    .cell-vert {
+        position: absolute; top: 50%; left: 50%;
+        white-space: nowrap;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        font-size: 6pt;
+    }
+    .cell-desc-row { height: 70pt; position: relative; }
     .cell-desc {
         position: absolute; top: 50%; left: 50%;
         white-space: nowrap;
         transform: translate(-50%, -50%) rotate(-90deg);
-        font-size: 6.5pt;
+        font-size: 6pt;
     }
     .cell-vuota { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4pt, #e2e8f0 4pt, #e2e8f0 5pt); }
-    .cell-zona { font-size: 6.5pt; font-weight: bold; background: #eaf6fc; }
+    .cell-zona { font-size: 6pt; font-weight: bold; background: #eaf6fc; }
 
-    .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6.5pt; font-weight: bold; color: #fff; }
+    .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6pt; font-weight: bold; color: #fff; }
     .badge-ok { background: #22c55e; }
     .badge-p2 { background: #f59e0b; }
 </style>
@@ -118,19 +125,23 @@
                 {% endfor %}
             </div>
             <div class="panel-row">
-                <div class="cell" style="flex:0 0 70pt;">CABLE N&deg;</div>
+                <div class="cell" style="flex:0 0 60pt;">CABLE N&deg;</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell">{{ p.cavo_n }}</div>
+                <div class="cell cell-vert-row">
+                    <div class="cell-vert">{{ p.cavo_n }}</div>
+                </div>
                 {% endfor %}
             </div>
             <div class="panel-row">
-                <div class="cell" style="flex:0 0 70pt;">Tipo cavo</div>
+                <div class="cell" style="flex:0 0 60pt;">Tipo cavo</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">{{ p.tipo_cavo }}</div>
+                <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
+                    <div class="cell-vert">{{ p.tipo_cavo }}</div>
+                </div>
                 {% endfor %}
             </div>
             <div class="panel-row">
-                <div class="cell" style="flex:0 0 70pt;">Descrizione</div>
+                <div class="cell" style="flex:0 0 60pt;">Descrizione</div>
                 {% for p in e.elemento.posizioni.all %}
                 <div class="cell cell-desc-row {% if p.non_cablata %}cell-vuota{% endif %}">
                     {% if not p.non_cablata %}<div class="cell-desc">{{ p.descrizione }}</div>{% endif %}
@@ -138,9 +149,11 @@
                 {% endfor %}
             </div>
             <div class="panel-row">
-                <div class="cell" style="flex:0 0 70pt;">Pos. in campo</div>
+                <div class="cell" style="flex:0 0 60pt;">Pos. in campo</div>
                 {% for p in e.elemento.posizioni.all %}
-                <div class="cell cell-zona">{{ p.posizione_in_campo }}</div>
+                <div class="cell cell-vert-row cell-zona">
+                    <div class="cell-vert">{{ p.posizione_in_campo }}</div>
+                </div>
                 {% endfor %}
             </div>
             <div class="panel-row">
