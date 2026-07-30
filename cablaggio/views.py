@@ -343,22 +343,36 @@ class RackAllegatoDeleteView(LoginRequiredMixin, DeleteView):
 
 # --- Report PDF -----------------------------------------------------------
 
+PANNELLI_PER_PAGINA = 2
+
+
+def _righe_report(progetto):
+    """Sequenza piatta di pannelli (con il titolo rack da mostrare sopra),
+    con 2 pannelli per pagina nel PDF: il titolo rack va ripetuto se una
+    pagina inizia a metà di un rack."""
+    righe = []
+    for rack in progetto.rack_set.prefetch_related('elementi__posizioni'):
+        for indice, (elemento, offset) in enumerate(elementi_con_offset(rack)):
+            righe.append({
+                'rack': rack,
+                'elemento': elemento,
+                'offset': offset,
+                'nuovo_rack': indice == 0,
+            })
+    for i, riga in enumerate(righe):
+        inizio_pagina = i > 0 and i % PANNELLI_PER_PAGINA == 0
+        riga['spezza_pagina_prima'] = inizio_pagina
+        riga['mostra_titolo_rack'] = riga['nuovo_rack'] or inizio_pagina
+    return righe
+
+
 @login_required
 def progetto_report_pdf(request, pk):
     progetto = get_object_or_404(Progetto, pk=pk)
     _attach_clienti([progetto])
-    rack_list = []
-    for rack in progetto.rack_set.prefetch_related('elementi__posizioni'):
-        rack_list.append({
-            'rack': rack,
-            'elementi': [
-                {'elemento': elemento, 'offset': offset}
-                for elemento, offset in elementi_con_offset(rack)
-            ],
-        })
     html_string = render_to_string('cablaggio/report_pdf.html', {
         'progetto': progetto,
-        'rack_list': rack_list,
+        'righe': _righe_report(progetto),
         'now': timezone.localtime(),
         'request': request,
     })
