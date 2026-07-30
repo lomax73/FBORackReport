@@ -4,3 +4,4 @@ gunicorn
 requests
 weasyprint
 pillow
+pypdf

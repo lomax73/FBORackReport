@@ -1,0 +1,88 @@
+{% load cablaggio_extras %}<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>{{ rack.nome }} — Report rack</title>
+{% include "cablaggio/_report_pdf_style.html" %}
+</head>
+<body>
+
+{% include "cablaggio/_report_pdf_footer.html" %}
+
+{% for riga in righe %}
+{% if riga.spezza_pagina_prima %}<div style="page-break-before: always;"></div>{% endif %}
+{% if riga.mostra_titolo_rack %}
+<div class="rack-title">
+    {{ rack.nome }}{% if rack.posizione %} — {{ rack.posizione }}{% endif %}
+</div>
+{% endif %}
+<div class="panel">
+    <div class="panel-label"><div class="panel-label-testo">{{ riga.elemento.etichetta }}</div></div>
+    <div class="panel-grid">
+        <div class="panel-row head">
+            <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell">{{ p|porta_display:riga.offset }}</div>
+            {% endfor %}
+        </div>
+        <div class="panel-row">
+            <div class="cell" style="flex:0 0 60pt;">CABLE N&deg;</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell cell-vert-row">
+                <div class="cell-vert">{{ p.cavo_n }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="panel-row">
+            <div class="cell" style="flex:0 0 60pt;">Tipo cavo</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
+                <div class="cell-vert">{{ p.tipo_cavo }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="panel-row">
+            <div class="cell" style="flex:0 0 60pt;">Descrizione</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
+                {% if not p.non_cablata %}<div class="cell-vert">{{ p.descrizione }}</div>{% endif %}
+            </div>
+            {% endfor %}
+        </div>
+        <div class="panel-row">
+            <div class="cell" style="flex:0 0 60pt;">Pos. in campo</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell cell-vert-row cell-zona">
+                <div class="cell-vert">{{ p.posizione_in_campo }}</div>
+            </div>
+            {% endfor %}
+        </div>
+        <div class="panel-row">
+            <div class="cell" style="flex:0 0 70pt;">FLUKE Check</div>
+            {% for p in riga.elemento.posizioni.all %}
+            <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
+                {% if p.esito_test == 'ok' %}<span class="badge badge-ok">OK</span>
+                {% elif p.esito_test == 'p2' %}<span class="badge badge-p2">P2</span>
+                {% endif %}
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endfor %}
+
+{% if allegati_pdf or allegati_non_pdf %}
+<div class="allegati-block">
+    <h4>Allegati — {{ rack.nome }}</h4>
+    {% if allegati_non_pdf %}
+    <ul>
+        {% for allegato in allegati_non_pdf %}
+        <li>{{ allegato.nome_originale|default:allegato.file.name }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+{% endif %}
+
+</body>
+</html>

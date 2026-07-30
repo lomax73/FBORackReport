@@ -1,0 +1,90 @@
+<style>
+    @page {
+        size: A4 landscape;
+        margin: 1.8cm 1.5cm 2.2cm;
+        @bottom-center { content: element(footer); }
+    }
+    * { box-sizing: border-box; }
+    body {
+        font-family: 'Helvetica', 'Arial', sans-serif;
+        color: #1f2937;
+        font-size: 9.5pt;
+        margin: 0;
+    }
+    .footer {
+        position: running(footer);
+        font-size: 7.5pt;
+        color: #94a3b8;
+        border-top: 1px solid #e2e8f0;
+        padding-top: 4pt;
+        text-align: center;
+    }
+
+    .header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        border-bottom: 2px solid #123247;
+        padding-bottom: 10pt;
+        margin-bottom: 14pt;
+    }
+    .header .meta { text-align: right; font-size: 9pt; color: #64748b; }
+
+    .sito-box {
+        border: 2px solid #123247;
+        text-align: center;
+        font-size: 13pt;
+        font-weight: bold;
+        padding: 6pt;
+        margin-bottom: 10pt;
+    }
+    .info-row { font-size: 9pt; color: #475569; margin: 0 0 12pt; }
+    .info-row strong { color: #1f2937; }
+
+    .rack-title {
+        background: #123247; color: #fff; font-weight: bold;
+        padding: 5pt 8pt; margin-bottom: 6pt; font-size: 11pt;
+        page-break-after: avoid;
+    }
+
+    .panel { display: flex; margin-bottom: 8pt; border: 1px solid #1f2937; page-break-inside: avoid; }
+    .panel-label {
+        width: 20pt; flex-shrink: 0; position: relative;
+        border-right: 1px solid #1f2937; background: #f1f5f9; overflow: hidden;
+    }
+    .panel-label-testo {
+        position: absolute; top: 50%; left: 50%;
+        white-space: nowrap;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        font-size: 13pt; font-weight: bold;
+    }
+    .panel-grid { flex: 1; }
+    .panel-row { display: flex; }
+    .panel-row.head { background: #f1f5f9; font-weight: bold; }
+    .cell {
+        flex: 1; min-width: 0; border-right: 1px solid #e2e8f0; border-bottom: 1px solid #e2e8f0;
+        padding: 1.5pt 1pt; text-align: center; font-size: 6pt; overflow: hidden;
+    }
+    .cell:last-child { border-right: none; }
+    .cell-vert-row { height: 42pt; position: relative; }
+    .cell-vert {
+        position: absolute; top: 50%; left: 50%;
+        width: 38pt;
+        white-space: normal; word-break: break-word; overflow: hidden;
+        text-align: center; line-height: 1.15;
+        transform: translate(-50%, -50%) rotate(-90deg);
+        font-size: 6pt;
+    }
+    .cell-vuota { background: repeating-linear-gradient(45deg, #f8fafc, #f8fafc 4pt, #e2e8f0 4pt, #e2e8f0 5pt); }
+    .cell-zona { font-weight: bold; background: #eaf6fc; }
+
+    .badge { display: inline-block; padding: 0.5pt 4pt; border-radius: 6pt; font-size: 6pt; font-weight: bold; color: #fff; }
+    .badge-ok { background: #22c55e; }
+    .badge-p2 { background: #f59e0b; }
+
+    .allegati-block { margin: 4pt 0 12pt; page-break-inside: avoid; }
+    .allegati-block h4 {
+        margin: 0 0 3pt; font-size: 9pt; color: #123247;
+    }
+    .allegati-block ul { margin: 0; padding-left: 14pt; font-size: 8pt; color: #475569; }
+</style>

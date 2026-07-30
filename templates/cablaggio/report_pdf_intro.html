@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<title>Report rack — {{ progetto.nome }}</title>
+{% include "cablaggio/_report_pdf_style.html" %}
+</head>
+<body>
+
+{% include "cablaggio/_report_pdf_footer.html" %}
+
+<div class="header">
+    <div><strong>FBO Solution</strong> — Report rack / patch panel</div>
+    <div class="meta">Report generato il {{ now|date:"d/m/Y" }} alle {{ now|time:"H:i" }}</div>
+</div>
+
+{% if progetto.sito %}<div class="sito-box">{{ progetto.sito }}</div>{% endif %}
+<p class="info-row">
+    <strong>Progetto:</strong> {{ progetto.nome }} &middot;
+    <strong>Cliente:</strong> {{ progetto.cliente.ragione_sociale }}
+    {% if progetto.data_intervento %} &middot; <strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}{% endif %}
+</p>
+
+</body>
+</html>

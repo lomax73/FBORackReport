@@ -1,3 +1,4 @@
+import io
 from dataclasses import dataclass
 
 from django.contrib import messages
@@ -10,6 +11,7 @@ from django.urls import reverse, reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
 from django.views.generic import CreateView, DeleteView, DetailView, ListView, UpdateView
+from pypdf import PdfReader, PdfWriter
 from weasyprint import HTML
 
 from . import portal_client
@@ -346,22 +348,15 @@ class RackAllegatoDeleteView(LoginRequiredMixin, DeleteView):
 PANNELLI_PER_PAGINA = 2
 
 
-def _righe_report(progetto):
-    """Sequenza piatta di pannelli (con il titolo rack da mostrare sopra),
-    con 2 pannelli per pagina nel PDF: il titolo rack va ripetuto se una
-    pagina inizia a metà di un rack. L'ultimo pannello di ogni rack segna
-    anche dove stampare gli allegati di quel rack."""
-    righe = []
-    for rack in progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'):
-        elementi = elementi_con_offset(rack)
-        for indice, (elemento, offset) in enumerate(elementi):
-            righe.append({
-                'rack': rack,
-                'elemento': elemento,
-                'offset': offset,
-                'nuovo_rack': indice == 0,
-                'ultimo_del_rack': indice == len(elementi) - 1,
-            })
+def _righe_rack(rack):
+    """Sequenza dei pannelli di un rack (con il titolo da mostrare sopra),
+    con 2 pannelli per pagina: il titolo va ripetuto se una pagina inizia
+    a metà del rack."""
+    elementi = elementi_con_offset(rack)
+    righe = [
+        {'elemento': elemento, 'offset': offset, 'nuovo_rack': indice == 0}
+        for indice, (elemento, offset) in enumerate(elementi)
+    ]
     for i, riga in enumerate(righe):
         inizio_pagina = i > 0 and i % PANNELLI_PER_PAGINA == 0
         riga['spezza_pagina_prima'] = inizio_pagina
@@ -369,17 +364,46 @@ def _righe_report(progetto):
     return righe
 
 
+def _pdf_da_html(template_name, contesto, request):
+    html_string = render_to_string(template_name, contesto)
+    return HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+
+
+def _unisci_pdf(blocchi):
+    """Concatena in un unico PDF una lista di documenti PDF completi (bytes)."""
+    writer = PdfWriter()
+    for blocco in blocchi:
+        for pagina in PdfReader(io.BytesIO(blocco)).pages:
+            writer.add_page(pagina)
+    buffer = io.BytesIO()
+    writer.write(buffer)
+    return buffer.getvalue()
+
+
 @login_required
 def progetto_report_pdf(request, pk):
     progetto = get_object_or_404(Progetto, pk=pk)
     _attach_clienti([progetto])
-    html_string = render_to_string('cablaggio/report_pdf.html', {
+
+    blocchi = [_pdf_da_html('cablaggio/report_pdf_intro.html', {
         'progetto': progetto,
-        'righe': _righe_report(progetto),
         'now': timezone.localtime(),
-        'request': request,
-    })
-    pdf_bytes = HTML(string=html_string, base_url=request.build_absolute_uri('/')).write_pdf()
+    }, request)]
+
+    for rack in progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'):
+        allegati_pdf = [a for a in rack.allegati.all() if a.file.name.lower().endswith('.pdf')]
+        allegati_non_pdf = [a for a in rack.allegati.all() if not a.file.name.lower().endswith('.pdf')]
+        blocchi.append(_pdf_da_html('cablaggio/report_pdf_rack.html', {
+            'rack': rack,
+            'righe': _righe_rack(rack),
+            'allegati_pdf': allegati_pdf,
+            'allegati_non_pdf': allegati_non_pdf,
+        }, request))
+        for allegato in allegati_pdf:
+            with allegato.file.open('rb') as f:
+                blocchi.append(f.read())
+
+    pdf_bytes = _unisci_pdf(blocchi)
 
     response = HttpResponse(pdf_bytes, content_type='application/pdf')
     filename = f'report-rack-{slugify(progetto.nome)}.pdf'
