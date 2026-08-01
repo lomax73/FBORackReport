@@ -29,6 +29,7 @@ from .forms import (
     TipoCavoFormSet,
 )
 from .models import ElementoRack, EsitoTest, Posizione, Progetto, Rack, RackAllegato, TipoCavo
+from .traduzioni import testi
 
 
 @dataclass
@@ -447,29 +448,45 @@ def progetto_report_pdf(request, pk):
     progetto = get_object_or_404(Progetto, pk=pk)
     _attach_clienti([progetto])
 
-    blocchi = [_pdf_da_html('cablaggio/report_pdf_intro.html', {
-        'progetto': progetto,
-        'now': timezone.localtime(),
-    }, request)]
+    racks = list(progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'))
+    now = timezone.localtime()
+    blocchi = []
 
-    if progetto.mostra_schema_rack:
-        blocchi.append(_pdf_da_html('cablaggio/report_pdf_schema.html', {
+    for indice, lingua in enumerate(progetto.lingue_report_lista()):
+        t = testi(lingua)
+
+        blocchi.append(_pdf_da_html('cablaggio/report_pdf_intro.html', {
             'progetto': progetto,
+            'now': now,
+            'lingua': lingua,
+            't': t,
         }, request))
 
-    for rack in progetto.rack_set.prefetch_related('elementi__posizioni', 'allegati'):
-        allegati_pdf = [a for a in rack.allegati.all() if a.file.name.lower().endswith('.pdf')]
-        allegati_non_pdf = [a for a in rack.allegati.all() if not a.file.name.lower().endswith('.pdf')]
-        blocchi.append(_pdf_da_html('cablaggio/report_pdf_rack.html', {
-            'progetto': progetto,
-            'rack': rack,
-            'righe': _righe_rack(rack),
-            'allegati_pdf': allegati_pdf,
-            'allegati_non_pdf': allegati_non_pdf,
-        }, request))
-        for allegato in allegati_pdf:
-            with allegato.file.open('rb') as f:
-                blocchi.append(f.read())
+        if progetto.mostra_schema_rack:
+            blocchi.append(_pdf_da_html('cablaggio/report_pdf_schema.html', {
+                'progetto': progetto,
+                'lingua': lingua,
+                't': t,
+            }, request))
+
+        for rack in racks:
+            allegati_pdf = [a for a in rack.allegati.all() if a.file.name.lower().endswith('.pdf')]
+            allegati_non_pdf = [a for a in rack.allegati.all() if not a.file.name.lower().endswith('.pdf')]
+            blocchi.append(_pdf_da_html('cablaggio/report_pdf_rack.html', {
+                'progetto': progetto,
+                'rack': rack,
+                'righe': _righe_rack(rack),
+                'allegati_pdf': allegati_pdf,
+                'allegati_non_pdf': allegati_non_pdf,
+                'lingua': lingua,
+                't': t,
+            }, request))
+            # I PDF allegati sono documenti esterni non tradotti: vanno
+            # inseriti una sola volta, non ripetuti per ogni lingua.
+            if indice == 0:
+                for allegato in allegati_pdf:
+                    with allegato.file.open('rb') as f:
+                        blocchi.append(f.read())
 
     pdf_bytes = _unisci_pdf(blocchi)
 

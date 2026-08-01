@@ -1,5 +1,5 @@
 {% load cablaggio_extras %}<!DOCTYPE html>
-<html lang="it">
+<html lang="{{ lingua|default:'it' }}">
 <head>
 <meta charset="UTF-8">
 <title>Report rack — {{ progetto.nome }}</title>
@@ -13,7 +13,7 @@
     <div class="logo-cliente">
         {% if progetto.logo_cliente %}<img src="{{ progetto.logo_cliente.url }}" alt="Logo cliente">{% endif %}
     </div>
-    <div class="meta">Report generato il {{ now|date:"d/m/Y" }} alle {{ now|time:"H:i" }}</div>
+    <div class="meta">{{ t.report_generato_il }} {{ now|date:"d/m/Y" }} {{ t.alle }} {{ now|time:"H:i" }}</div>
 </div>
 
 {% if progetto.sito %}<div class="sito-box">{{ progetto.sito }}</div>{% endif %}
@@ -25,7 +25,7 @@
     {% if indirizzo %}<div class="cliente-indirizzo">{{ indirizzo }}</div>{% endif %}
     {% endwith %}
     {% if progetto.data_intervento %}
-    <div class="data-intervento"><strong>Data intervento:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}</div>
+    <div class="data-intervento"><strong>{{ t.data_intervento }}:</strong> {{ progetto.data_intervento|date:"d/m/Y" }}</div>
     {% endif %}
 </div>
 

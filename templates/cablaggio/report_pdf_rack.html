@@ -1,5 +1,5 @@
 {% load cablaggio_extras %}<!DOCTYPE html>
-<html lang="it">
+<html lang="{{ lingua|default:'it' }}">
 <head>
 <meta charset="UTF-8">
 <title>{{ rack.nome }} — Report rack</title>
@@ -20,7 +20,7 @@
     <div class="panel-label"><div class="panel-label-testo">{{ riga.elemento.etichetta }}</div></div>
     <div class="panel-grid">
         <div class="panel-row head">
-            <div class="cell" style="flex:0 0 70pt;">Data Ports</div>
+            <div class="cell" style="flex:0 0 70pt;">{{ t.data_ports }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell">
                 {{ p|porta_display:riga.offset }}
@@ -29,7 +29,7 @@
             {% endfor %}
         </div>
         <div class="panel-row">
-            <div class="cell" style="flex:0 0 60pt;">CABLE N&deg;</div>
+            <div class="cell" style="flex:0 0 60pt;">{{ t.cable_n }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell cell-vert-row">
                 <div class="cell-vert">{{ p.cavo_n }}</div>
@@ -37,7 +37,7 @@
             {% endfor %}
         </div>
         <div class="panel-row">
-            <div class="cell" style="flex:0 0 60pt;">Tipo cavo</div>
+            <div class="cell" style="flex:0 0 60pt;">{{ t.tipo_cavo }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
                 <div class="cell-vert">{{ p.tipo_cavo.nome }}</div>
@@ -45,7 +45,7 @@
             {% endfor %}
         </div>
         <div class="panel-row">
-            <div class="cell" style="flex:0 0 60pt;">Descrizione</div>
+            <div class="cell" style="flex:0 0 60pt;">{{ t.descrizione }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell cell-vert-row {% if p.non_cablata %}cell-vuota{% endif %}">
                 {% if not p.non_cablata %}<div class="cell-vert">{{ p.descrizione }}</div>{% endif %}
@@ -53,7 +53,7 @@
             {% endfor %}
         </div>
         <div class="panel-row">
-            <div class="cell" style="flex:0 0 60pt;">Pos. in campo</div>
+            <div class="cell" style="flex:0 0 60pt;">{{ t.pos_campo }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell cell-vert-row cell-zona">
                 <div class="cell-vert">{{ p.posizione_in_campo }}</div>
@@ -61,7 +61,7 @@
             {% endfor %}
         </div>
         <div class="panel-row">
-            <div class="cell" style="flex:0 0 70pt;">FLUKE Check</div>
+            <div class="cell" style="flex:0 0 70pt;">{{ t.fluke_check }}</div>
             {% for p in riga.elemento.posizioni.all %}
             <div class="cell {% if p.non_cablata %}cell-vuota{% endif %}">
                 {% if p.esito_test %}<span class="badge" style="background:{{ p.esito_test.colore }};">{{ p.esito_test.nome }}</span>{% endif %}
@@ -74,7 +74,7 @@
 
 {% if allegati_pdf or allegati_non_pdf %}
 <div class="allegati-block">
-    <h4>Allegati — {{ rack.nome }}</h4>
+    <h4>{{ t.allegati }} — {{ rack.nome }}</h4>
     {% if allegati_non_pdf %}
     <ul>
         {% for allegato in allegati_non_pdf %}

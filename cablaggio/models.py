@@ -28,6 +28,20 @@ class Progetto(models.Model):
         'Includi schema grafico rack nel PDF', default=True,
         help_text='Se attivo, il report PDF include una pagina con lo schema grafico dei rack e dei pannelli.',
     )
+
+    LINGUA_IT = 'it'
+    LINGUA_EN = 'en'
+    LINGUA_DE = 'de'
+    LINGUE_CHOICES = [
+        (LINGUA_IT, 'Italiano'),
+        (LINGUA_EN, 'English'),
+        (LINGUA_DE, 'Deutsch'),
+    ]
+
+    lingue_report = models.CharField(
+        'Lingue report PDF', max_length=20, default=LINGUA_IT,
+        help_text='Lingue in cui generare il report PDF: se ne scegli più di una, il report le contiene tutte in sequenza.',
+    )
     creato_il = models.DateTimeField(auto_now_add=True)
 
     class Meta:
@@ -35,6 +49,10 @@ class Progetto(models.Model):
 
     def __str__(self):
         return self.nome
+
+    def lingue_report_lista(self):
+        valori = [v for v in self.lingue_report.split(',') if v]
+        return valori or [self.LINGUA_IT]
 
 
 class Rack(models.Model):

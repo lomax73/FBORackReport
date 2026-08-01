@@ -1,5 +1,5 @@
 {% load cablaggio_extras %}<!DOCTYPE html>
-<html lang="it">
+<html lang="{{ lingua|default:'it' }}">
 <head>
 <meta charset="UTF-8">
 <title>Schema rack — {{ progetto.nome }}</title>
@@ -9,7 +9,7 @@
 
 {% include "cablaggio/_report_pdf_footer.html" %}
 
-<div class="rack-title" style="margin-bottom:14pt;">Schema rack</div>
+<div class="rack-title" style="margin-bottom:14pt;">{{ t.titolo_schema }}</div>
 
 <div class="schema-racks">
     {% for rack in progetto.rack_set.all %}
@@ -19,10 +19,10 @@
             {% for elemento in rack.elementi.all %}
             <div class="schema-pannello">
                 <div class="schema-pannello-blocco" style="min-height:{{ elemento.unita_rack|moltiplica:10 }}pt;">{{ elemento.etichetta }}</div>
-                <div class="schema-pannello-info">{{ elemento.get_tipo_display }} &middot; {{ elemento.n_posizioni }} porte &middot; {{ elemento.unita_rack }}U</div>
+                <div class="schema-pannello-info">{% if elemento.tipo == 'patch_panel' %}{{ t.tipo_patch_panel }}{% else %}{{ t.tipo_cassetto_fibra }}{% endif %} &middot; {{ elemento.n_posizioni }} {{ t.porte }} &middot; {{ elemento.unita_rack }}U</div>
             </div>
             {% empty %}
-            <div class="schema-pannello-info" style="padding:5pt;">Nessun pannello.</div>
+            <div class="schema-pannello-info" style="padding:5pt;">{{ t.nessun_pannello }}</div>
             {% endfor %}
         </div>
     </div>
