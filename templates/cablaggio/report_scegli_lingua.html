@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+
+{% block title %}Scarica report — {{ progetto.nome }}{% endblock %}
+
+{% block content %}
+<h1>Scarica report PDF</h1>
+<p style="color:#64748b; margin-top:-0.5rem;">{{ progetto.nome }} &middot; {{ progetto.cliente.ragione_sociale }}</p>
+
+<div class="card">
+    <p style="margin-top:0;">Scegli la lingua in cui generare il report: viene creato un file PDF separato per ciascuna lingua.</p>
+    <table>
+        <thead>
+            <tr><th>Lingua</th><th></th></tr>
+        </thead>
+        <tbody>
+            {% for codice, nome in lingue %}
+            <tr>
+                <td>{{ nome }}</td>
+                <td style="text-align:right;">
+                    <a class="btn" href="{% url 'progetto-report-pdf' progetto.pk codice %}">Genera report {{ nome }}</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<a href="{% url 'progetto-detail' progetto.pk %}">&larr; Torna al progetto</a>
+{% endblock %}

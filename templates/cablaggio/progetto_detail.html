@@ -7,7 +7,7 @@
 <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:0.5rem;">
     <h1>{{ progetto.nome }}</h1>
     <div style="display:flex; gap:0.6rem;">
-        <a class="btn btn-secondary" href="{% url 'progetto-report-pdf' progetto.pk %}">Scarica report PDF</a>
+        <a class="btn btn-secondary" href="{% url 'progetto-report' progetto.pk %}">Scarica report PDF</a>
         <a class="btn btn-secondary" href="{% url 'progetto-update' progetto.pk %}">Modifica</a>
         <a class="btn btn-secondary" href="{% url 'progetto-delete' progetto.pk %}">Elimina</a>
     </div>

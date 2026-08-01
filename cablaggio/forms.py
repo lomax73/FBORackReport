@@ -5,32 +5,12 @@ from . import portal_client
 from .models import ElementoRack, EsitoTest, Posizione, Progetto, Rack, TipoCavo
 
 
-class ListaLingueField(forms.MultipleChoiceField):
-    """Adatta un CharField 'a,b,c' del modello a un
-    CheckboxSelectMultiple: in lettura scompone la stringa in lista, in
-    salvataggio la ricompone in stringa separata da virgole."""
-
-    def prepare_value(self, value):
-        if isinstance(value, str):
-            return value.split(',') if value else []
-        return value
-
-    def clean(self, value):
-        valori = super().clean(value)
-        return ','.join(valori)
-
-
 class ProgettoForm(forms.ModelForm):
     cliente = forms.ChoiceField(label='Cliente')
-    lingue_report = ListaLingueField(
-        label='Lingue report PDF',
-        choices=Progetto.LINGUE_CHOICES,
-        widget=forms.CheckboxSelectMultiple,
-    )
 
     class Meta:
         model = Progetto
-        fields = ['nome', 'sito', 'data_intervento', 'note', 'logo_cliente', 'mostra_schema_rack', 'lingue_report']
+        fields = ['nome', 'sito', 'data_intervento', 'note', 'logo_cliente', 'mostra_schema_rack']
         widgets = {
             'data_intervento': forms.DateInput(attrs={'type': 'date'}),
             'note': forms.Textarea(attrs={'rows': 3}),
