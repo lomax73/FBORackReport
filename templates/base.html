@@ -155,6 +155,7 @@
 </div>
 <script>
   window.FBOFLAG_APP = "rackreport";
+  window.FBOFLAG_USER = "{{ request.user.username|default:'' }}";
   window.FBOFLAG_HUB = "https://feedback.fbosolution.it";
 </script>
 <script src="https://feedback.fbosolution.it/static/fboflag.js" defer></script>
